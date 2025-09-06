@@ -1,0 +1,180 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 @startuml SequenceDiagram\
+\
+!theme plain\
+title AI Voice Interface System - Detailed Sequence Diagram\
+\
+actor User as U\
+participant "Voice Interface" as VI\
+participant "Speech-to-Text" as STT\
+participant "AI Agent Controller" as AC\
+participant "Planning Module" as PM\
+participant "RAG Retrieval Module" as RRM\
+participant "RAG Service" as RS\
+participant "Knowledge Base" as KB\
+participant "Workflow Generator" as WG\
+participant "Workflow Executor" as WE\
+participant "Tool Interfaces" as TI\
+participant "Custom Logic Engine" as CLE\
+participant "External APIs" as API\
+participant "Response Generator" as RG\
+participant "Text-to-Speech" as TTS\
+\
+autonumber\
+\
+== Voice Input Processing ==\
+U -> VI: **Voice Input** (Audio)\
+activate VI\
+note right of VI: Captures audio stream\\nfrom microphone\
+\
+VI -> STT: convertToText(audioStream)\
+activate STT\
+note right of STT: Converts speech\\nto text using NLP\
+\
+STT --> VI: textQuery\
+deactivate STT\
+\
+VI -> AC: processQuery(textQuery)\
+activate AC\
+note right of AC: Main orchestrator\\nfor AI processing\
+\
+== Query Analysis & Planning ==\
+AC -> PM: analyzeQuery(textQuery)\
+activate PM\
+note right of PM: Analyzes intent,\\nextract entities,\\nplan execution steps\
+\
+PM -> PM: extractEntities()\
+PM -> PM: determineIntent()\
+PM -> PM: createExecutionStrategy()\
+\
+PM --> AC: executionPlan\
+deactivate PM\
+\
+== Knowledge Retrieval ==\
+AC -> RRM: retrieveRelevantContext(textQuery, executionPlan)\
+activate RRM\
+note right of RRM: Retrieves relevant\\ndocuments for context\
+\
+RRM -> RS: queryKnowledgeBase(searchQuery, filters)\
+activate RS\
+\
+RS -> KB: vectorSearch(embeddedQuery)\
+activate KB\
+KB --> RS: relevantDocuments[]\
+deactivate KB\
+\
+RS -> RS: rankDocuments()\
+RS -> RS: filterByRelevance()\
+\
+RS --> RRM: rankedDocuments[]\
+deactivate RS\
+\
+RRM -> RRM: processDocuments()\
+RRM --> AC: contextualInformation\
+deactivate RRM\
+\
+== Workflow Generation ==\
+AC -> WG: generateWorkflow(executionPlan, contextualInformation)\
+activate WG\
+note right of WG: Creates executable\\nworkflow with steps\
+\
+WG -> WG: selectWorkflowTemplate()\
+WG -> WG: customizeSteps()\
+WG -> WG: validateWorkflow()\
+\
+WG --> AC: workflowDefinition\
+deactivate WG\
+\
+== Workflow Execution ==\
+AC -> WE: executeWorkflow(workflowDefinition)\
+activate WE\
+note right of WE: Executes workflow\\nsteps sequentially\
+\
+loop For Each Workflow Step\
+    WE -> WE: validateStep()\
+    \
+    alt Tool Execution Required\
+        WE -> TI: executeTool(toolName, parameters)\
+        activate TI\
+        \
+        TI -> API: makeAPICall(endpoint, data)\
+        activate API\
+        API --> TI: apiResponse\
+        deactivate API\
+        \
+        TI --> WE: toolResult\
+        deactivate TI\
+        \
+    else Custom Logic Required\
+        WE -> CLE: executeCustomLogic(script, parameters)\
+        activate CLE\
+        \
+        CLE -> CLE: validateScript()\
+        CLE -> CLE: executeInSandbox()\
+        \
+        CLE --> WE: logicResult\
+        deactivate CLE\
+    end\
+    \
+    WE -> WE: aggregateResults()\
+end\
+\
+WE --> AC: workflowResults\
+deactivate WE\
+\
+== Response Generation ==\
+AC -> RG: generateResponse(workflowResults, contextualInformation)\
+activate RG\
+note right of RG: Creates natural\\nlanguage response\
+\
+RG -> RG: analyzeResults()\
+RG -> RG: selectResponseTemplate()\
+RG -> RG: populateTemplate()\
+RG -> RG: formatForSpeech()\
+\
+RG --> AC: formattedResponse\
+deactivate RG\
+\
+== Voice Output Processing ==\
+AC -> TTS: convertToAudio(formattedResponse)\
+activate TTS\
+note right of TTS: Converts text to\\nnatural speech\
+\
+TTS -> TTS: processText()\
+TTS -> TTS: generateAudio()\
+\
+TTS --> AC: audioResponse\
+deactivate TTS\
+\
+AC --> VI: audioResponse\
+deactivate AC\
+\
+VI -> U: **Voice Output** (Audio)\
+deactivate VI\
+note left of U: User hears the\\nAI-generated response\
+\
+== Error Handling (Alternative Flow) ==\
+group Error Scenarios\
+    note over AC, WE: If any step fails, error handling is triggered\
+    \
+    alt Workflow Execution Error\
+        WE -> AC: executionError\
+        AC -> RG: generateErrorResponse(error)\
+        RG -> AC: errorResponse\
+    else Knowledge Retrieval Error\
+        RRM -> AC: retrievalError\
+        AC -> RG: generateFallbackResponse()\
+    else External API Error\
+        API -> TI: apiError\
+        TI -> WE: toolError\
+        WE -> AC: workflowError\
+    end\
+end\
+\
+@enduml}
