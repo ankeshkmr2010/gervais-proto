@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"rag-engine/app/controllers"
 	"rag-engine/app/drivers"
 
 	"log"
@@ -37,8 +38,12 @@ func main() {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
+	controller := controllers.NewBaseController()
+
 	go func() {
 		router.GET("/", func(c *gin.Context) { c.JSON(200, "Hello") })
+		router.GET("/healthCheck", controller.HealthCheck)
+
 		server = &http.Server{
 			Addr:    ":8080",
 			Handler: router,

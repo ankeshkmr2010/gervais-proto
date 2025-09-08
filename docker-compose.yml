@@ -49,33 +49,33 @@ services:
   #      - "-c"
   #      - "/bin/echo 'postgres:5432:*:postgres:postgres' > /tmp/pgpassfile && chmod 600 /tmp/pgpassfile && /entrypoint.sh"
 
-  mongodb:
-    image: mongo:6
-    container_name: mongodb
-    restart: unless-stopped
-    ports:
-      - "27017:27017" # Access from host at localhost:27017
-    volumes:
-      - mongo_data:/data/db
-    networks:
-      - stubnet
+  # mongodb:
+  #   image: mongo:6
+  #   container_name: mongodb
+  #   restart: unless-stopped
+  #   ports:
+  #     - "27017:27017" # Access from host at localhost:27017
+  #   volumes:
+  #     - mongo_data:/data/db
+  #   networks:
+  #     - stubnet
 
-  mongo-express:
-    image: mongo-express
-    container_name: mongo-express
-    restart: unless-stopped
-    ports:
-      - "8081:8081" # Access from host at localhost:8081
-    environment:
-      ME_CONFIG_MONGODB_SERVER: mongodb
-      ME_CONFIG_MONGODB_PORT: 27017
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: true
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: admin123
-    depends_on:
-      - mongodb
-    networks:
-      - stubnet
+  # mongo-express:
+  #   image: mongo-express
+  #   container_name: mongo-express
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8081:8081" # Access from host at localhost:8081
+  #   environment:
+  #     ME_CONFIG_MONGODB_SERVER: mongodb
+  #     ME_CONFIG_MONGODB_PORT: 27017
+  #     ME_CONFIG_MONGODB_ENABLE_ADMIN: true
+  #     ME_CONFIG_BASICAUTH_USERNAME: admin
+  #     ME_CONFIG_BASICAUTH_PASSWORD: admin123
+  #   depends_on:
+  #     - mongodb
+  #   networks:
+  #     - stubnet
 
   redis:
     image: redis:7
